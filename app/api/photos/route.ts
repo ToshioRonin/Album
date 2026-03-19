@@ -6,10 +6,10 @@ export async function POST(request: Request) {
   try {
     // 1. Extraemos los datos del cuerpo de la petición (body)
     const body = await request.json();
-    const { title, url } = body;
+    const { title, imageUrl } = body;
 
     // 2. Validación básica (puedes agregar más campos según tu modelo de Prisma)
-    if (!title || !url) {
+    if (!title || !imageUrl) {
       return NextResponse.json(
         { message: "Faltan campos obligatorios: title o url" },
         { status: 400 }
@@ -21,7 +21,7 @@ export async function POST(request: Request) {
     const newPhoto = await prisma.photo.create({
       data: {
         title,
-        url,
+        imageUrl,
       },
     });
 
