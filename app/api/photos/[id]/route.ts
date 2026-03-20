@@ -86,3 +86,38 @@ export async function DELETE(
     );
   }
 }
+
+// Método PATCH para editar una foto existente
+export async function PATCH(
+  request: Request,
+  { params }: { params: { id: string } }
+) {
+  try {
+    const { id } = await params;
+    const body = await request.json();
+    
+    const { title, imageUrl } = body;
+
+    const numericId = Number(id);
+
+    if (isNaN(numericId)) {
+      return NextResponse.json({ message: "ID no válido" }, { status: 400 });
+    }
+
+    const updatedPhoto = await prisma.photo.update({
+      where: { id: numericId },
+      data: {
+        ...(title && { title }),
+        ...(imageUrl && { imageUrl }),
+      },
+    });
+
+    return NextResponse.json(updatedPhoto);
+  } catch (error) {
+    console.error("Error al actualizar:", error);
+    return NextResponse.json(
+      { message: "No se pudo actualizar la imagen" },
+      { status: 500 }
+    );
+  }
+}
