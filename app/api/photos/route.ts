@@ -2,7 +2,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma"; // Asegúrate de que la ruta a tu cliente de prisma sea correcta
 
-
+"Metodo GET"
 export async function GET() {
   const photos = await prisma.photo.findMany({
     orderBy: { createdAt: 'desc' }
@@ -10,6 +10,8 @@ export async function GET() {
   return NextResponse.json(photos)
 }
 
+
+"Metodo POST"
 export async function POST(request: Request) {
   try {
     // 1. Extraemos los datos del cuerpo de la petición (body)

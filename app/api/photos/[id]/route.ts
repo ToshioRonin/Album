@@ -1,6 +1,9 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
+"Comprobando que jenkins funciona"
+
+"Metodo GET por id"
 export async function GET(
     req: Request,
     { params }: { params: Promise<{ id: string }> }
@@ -40,49 +43,50 @@ export async function GET(
     }
 }
 
+"Metodo DELETE"
 export async function DELETE(
-  request: Request,
-  { params }: { params: Promise<{ id: string }> } 
+    request: Request,
+    { params }: { params: Promise<{ id: string }> }
 ) {
-  try {
-    const resolvedParams = await params;
-    const id = resolvedParams.id;
+    try {
+        const resolvedParams = await params;
+        const id = resolvedParams.id;
 
-    const idNumber = parseInt(id.trim(), 10);
+        const idNumber = parseInt(id.trim(), 10);
 
-    console.log("Intentando borrar ID real:", idNumber);
+        console.log("Intentando borrar ID real:", idNumber);
 
-    if (isNaN(idNumber)) {
-      return NextResponse.json(
-        { error: `El valor '${id}' no es un número válido.` },
-        { status: 400 }
-      );
+        if (isNaN(idNumber)) {
+            return NextResponse.json(
+                { error: `El valor '${id}' no es un número válido.` },
+                { status: 400 }
+            );
+        }
+
+        const deletedPhoto = await prisma.photo.delete({
+            where: {
+                id: idNumber,
+            },
+        });
+
+        return NextResponse.json({
+            message: "¡Borrado con éxito!",
+            deletedPhoto,
+        });
+
+    } catch (error: any) {
+        console.error("ERROR EN EL SERVIDOR:", error.message);
+
+        if (error.code === 'P2025') {
+            return NextResponse.json(
+                { error: "El registro no existe en la base de datos." },
+                { status: 404 }
+            );
+        }
+
+        return NextResponse.json(
+            { error: "Error interno", detalle: error.message },
+            { status: 500 }
+        );
     }
-
-    const deletedPhoto = await prisma.photo.delete({
-      where: {
-        id: idNumber,
-      },
-    });
-
-    return NextResponse.json({
-      message: "¡Borrado con éxito!",
-      deletedPhoto,
-    });
-
-  } catch (error: any) {
-    console.error("ERROR EN EL SERVIDOR:", error.message);
-    
-    if (error.code === 'P2025') {
-      return NextResponse.json(
-        { error: "El registro no existe en la base de datos." },
-        { status: 404 }
-      );
-    }
-
-    return NextResponse.json(
-      { error: "Error interno", detalle: error.message },
-      { status: 500 }
-    );
-  }
 }
