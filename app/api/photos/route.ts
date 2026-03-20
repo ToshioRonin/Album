@@ -1,6 +1,6 @@
 
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma"; // Asegúrate de que la ruta a tu cliente de prisma sea correcta
+import { prisma } from "@/lib/prisma";
 
 "Metodo GET"
 export async function GET() {
@@ -10,15 +10,12 @@ export async function GET() {
   return NextResponse.json(photos)
 }
 
-
-"Metodo POST"
+//Metodo POST para crear una nueva foto en la base de datos
 export async function POST(request: Request) {
   try {
-    // 1. Extraemos los datos del cuerpo de la petición (body)
     const body = await request.json();
     const { title, imageUrl } = body;
 
-    // 2. Validación básica (puedes agregar más campos según tu modelo de Prisma)
     if (!title || !imageUrl) {
       return NextResponse.json(
         { message: "Faltan campos obligatorios: title o url" },
@@ -26,8 +23,6 @@ export async function POST(request: Request) {
       );
     }
 
-    // 3. Creamos el registro en la base de datos usando Prisma
-    // Nota: Asegúrate de que tu modelo en schema.prisma se llame 'photo'
     const newPhoto = await prisma.photo.create({
       data: {
         title,
@@ -35,7 +30,6 @@ export async function POST(request: Request) {
       },
     });
 
-    // 4. Devolvemos la respuesta de éxito
     return NextResponse.json(newPhoto, { status: 201 });
 
   } catch (error) {
