@@ -2,6 +2,14 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma"; // Asegúrate de que la ruta a tu cliente de prisma sea correcta
 
+
+export async function GET() {
+  const photos = await prisma.photo.findMany({
+    orderBy: { createdAt: 'desc' }
+  })
+  return NextResponse.json(photos)
+}
+
 export async function POST(request: Request) {
   try {
     // 1. Extraemos los datos del cuerpo de la petición (body)
@@ -13,7 +21,7 @@ export async function POST(request: Request) {
       return NextResponse.json(
         { message: "Faltan campos obligatorios: title o url" },
         { status: 400 }
-      ); 
+      );
     }
 
     // 3. Creamos el registro en la base de datos usando Prisma
