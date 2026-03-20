@@ -1,5 +1,5 @@
-import { prisma } from '@/lib/prisma'
-import { NextResponse } from 'next/server'
+import { NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
 
 export async function GET(
     req: Request,
@@ -38,4 +38,51 @@ export async function GET(
             { status: 500 }
         )
     }
+}
+
+export async function DELETE(
+  request: Request,
+  { params }: { params: Promise<{ id: string }> } 
+) {
+  try {
+    const resolvedParams = await params;
+    const id = resolvedParams.id;
+
+    const idNumber = parseInt(id.trim(), 10);
+
+    console.log("Intentando borrar ID real:", idNumber);
+
+    if (isNaN(idNumber)) {
+      return NextResponse.json(
+        { error: `El valor '${id}' no es un número válido.` },
+        { status: 400 }
+      );
+    }
+
+    const deletedPhoto = await prisma.photo.delete({
+      where: {
+        id: idNumber,
+      },
+    });
+
+    return NextResponse.json({
+      message: "¡Borrado con éxito!",
+      deletedPhoto,
+    });
+
+  } catch (error: any) {
+    console.error("ERROR EN EL SERVIDOR:", error.message);
+    
+    if (error.code === 'P2025') {
+      return NextResponse.json(
+        { error: "El registro no existe en la base de datos." },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json(
+      { error: "Error interno", detalle: error.message },
+      { status: 500 }
+    );
+  }
 }
